@@ -54,7 +54,23 @@ public class AuthService {
             throw new AppException("ACCOUNT_LOCKED", "Cuenta bloqueada", 403);
         }
 
-        if (!passwordEncoder.matches(request.getContrasena(), usuario.getContrasena())) {
+        boolean passwordValida = false;
+        try {
+            passwordValida = passwordEncoder.matches(request.getContrasena(), usuario.getContrasena());
+        } catch (IllegalArgumentException ex) {
+            // Hash inválido o formato no BCrypt.
+            passwordValida = false;
+        }
+
+        // Compatibilidad temporal para contraseñas legacy en texto plano.
+        if (!passwordValida && request.getContrasena().equals(usuario.getContrasena())) {
+            usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
+            usuarioRepository.save(usuario);
+            passwordValida = true;
+            log.info("Contraseña legacy migrada a BCrypt para usuario: {}", usuario.getEmail());
+        }
+
+        if (!passwordValida) {
             log.warn("Contraseña incorrecta para usuario: {}", usuario.getEmail());
             usuario.setIntentosFallidos(usuario.getIntentosFallidos() + 1);
             

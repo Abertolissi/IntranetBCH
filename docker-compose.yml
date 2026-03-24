@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     build:
@@ -9,16 +7,12 @@ services:
       - SA_PASSWORD=YourP@ssword1
       - ACCEPT_EULA=Y
     volumes:
-      - db_data:/var/opt/mssql/data
-      - ./database/scripts:/scripts
-    healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "$SA_PASSWORD", "-Q", "SELECT 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      - db_data:/var/opt/mssql
 
   db-init:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    build:
+      context: ./database
+      dockerfile: Dockerfile.init
     environment:
       - SA_PASSWORD=YourP@ssword1
       - ACCEPT_EULA=Y
@@ -26,13 +20,17 @@ services:
       - ./database/scripts:/scripts
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_started
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
-        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d master -i /scripts/01_create_database.sql &&
-        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d banco -i /scripts/02_create_tables.sql &&
-        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d banco -i /scripts/03_seed_data.sql &&
+        until /opt/mssql-tools18/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -Q "SELECT 1" > /dev/null 2>&1; do
+          echo "Waiting for SQL Server...";
+          sleep 2;
+        done &&
+        /opt/mssql-tools18/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d master -i /scripts/01_create_database.sql &&
+        /opt/mssql-tools18/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d banco -i /scripts/02_create_tables.sql &&
+        /opt/mssql-tools18/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d banco -i /scripts/03_seed_data.sql &&
         echo "Database initialization completed"
 
   backend:
@@ -48,7 +46,9 @@ services:
       - DB_PASSWORD=YourP@ssword1
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_started
+      db-init:
+        condition: service_completed_successfully
     volumes:
       - ./storage/documents:/app/storage/documents
       - ./storage/uploads:/app/storage/uploads

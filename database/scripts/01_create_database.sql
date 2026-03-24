@@ -1,5 +1,5 @@
-CREATE DATABASE banco;
-
-USE banco;
-
--- Aquí puedes agregar más configuraciones iniciales si es necesario.
+IF DB_ID('banco') IS NULL
+BEGIN
+	CREATE DATABASE banco;
+END
+GO
