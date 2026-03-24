@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://db:1433;databaseName=banco;encrypt=false;trustServerCertificate=true
+    username: sa
+    password: YourP@ssword1
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    root: INFO
+    com.banco: DEBUG
+
+# Docker-specific configurations
+profiles:
+  active: docker
+
+# Document storage configuration
+document-storage:
+  local-path: /storage/documents
+  upload-path: /storage/uploads
+  # Consider using a cloud storage service for production
+  cloud-storage:
+    enabled: false
+    provider: aws
+    bucket-name: your-bucket-name
+    access-key: your-access-key
+    secret-key: your-secret-key

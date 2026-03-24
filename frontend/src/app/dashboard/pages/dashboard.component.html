@@ -1,0 +1,72 @@
+<app-layout>
+  <div class="dashboard-container">
+    <h1>Dashboard Principal</h1>
+
+    <mat-grid-list cols="4" rowHeight="200px" gutterSize="20px">
+      <mat-grid-tile>
+        <mat-card class="widget-card">
+          <mat-card-content>
+            <div class="widget-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="widget-data">
+              <p class="widget-label">Usuarios Activos</p>
+              <p class="widget-value">145 / 150</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+        <mat-card class="widget-card">
+          <mat-card-content>
+            <div class="widget-icon">
+              <mat-icon>newspaper</mat-icon>
+            </div>
+            <div class="widget-data">
+              <p class="widget-label">Noticias Recientes</p>
+              <p class="widget-value">12</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+        <mat-card class="widget-card">
+          <mat-card-content>
+            <div class="widget-icon">
+              <mat-icon>description</mat-icon>
+            </div>
+            <div class="widget-data">
+              <p class="widget-label">Documentos</p>
+              <p class="widget-value">287</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+        <mat-card class="widget-card">
+          <mat-card-content>
+            <div class="widget-icon">
+              <mat-icon>security</mat-icon>
+            </div>
+            <div class="widget-data">
+              <p class="widget-label">Estado Sistema</p>
+              <p class="widget-value">OPERATIVO</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+    <mat-card class="recent-news-card">
+      <mat-card-header>
+        <mat-card-title>Noticias Recientes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Cargando noticias...</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</app-layout>

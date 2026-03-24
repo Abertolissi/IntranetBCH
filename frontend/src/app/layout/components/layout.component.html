@@ -1,0 +1,53 @@
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="spacer"></span>
+      <span class="app-title">Intranet Bancaria</span>
+      <span class="spacer"></span>
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>Mi Perfil</button>
+        <button mat-menu-item>Configuración</button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">Cerrar Sesión</button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <mat-sidenav-container>
+      <mat-sidenav #sidenav mode="side" opened="true">
+        <mat-nav-list>
+          <mat-list-item>
+            <mat-icon matListItemIcon>dashboard</mat-icon>
+            <a matListItemTitle routerLink="/app/dashboard" (click)="sidenav.toggle()">
+              Dashboard
+            </a>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon matListItemIcon>newspaper</mat-icon>
+            <a matListItemTitle routerLink="/app/noticias" (click)="sidenav.toggle()">
+              Noticias
+            </a>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon matListItemIcon>description</mat-icon>
+            <a matListItemTitle routerLink="/app/documentos" (click)="sidenav.toggle()">
+              Documentos
+            </a>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+            <a matListItemTitle routerLink="/app/admin" (click)="sidenav.toggle()">
+              Administración
+            </a>
+          </mat-list-item>
+        </mat-nav-list>
+      </mat-sidenav>
+
+      <mat-sidenav-content>
+        <ng-content></ng-content>
+      </mat-sidenav-content>
+    </mat-sidenav-container>

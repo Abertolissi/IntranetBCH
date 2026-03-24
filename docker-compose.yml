@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  db:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    environment:
+      - SA_PASSWORD=YourP@ssword1
+      - ACCEPT_EULA=Y
+    volumes:
+      - db_data:/var/opt/mssql/data
+      - ./database/scripts:/scripts
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "$SA_PASSWORD", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=YourP@ssword1
+      - ACCEPT_EULA=Y
+    volumes:
+      - ./database/scripts:/scripts
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d master -i /scripts/01_create_database.sql &&
+        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d banco -i /scripts/02_create_tables.sql &&
+        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "YourP@ssword1" -C -d banco -i /scripts/03_seed_data.sql &&
+        echo "Database initialization completed"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_URL=jdbc:sqlserver://db:1433;databaseName=banco;encrypt=false;trustServerCertificate=true
+      - DB_USERNAME=sa
+      - DB_PASSWORD=YourP@ssword1
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./storage/documents:/app/storage/documents
+      - ./storage/uploads:/app/storage/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+
+networks:
+  default:
+    driver: bridge
+
+# Best practices for document storage:
+# Consider using a dedicated storage service (like AWS S3 or Azure Blob Storage) for scalability and reliability.
+# Local storage directories are for temporary or less critical files.

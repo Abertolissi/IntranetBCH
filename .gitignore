@@ -1,0 +1,55 @@
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# Maven
+target/
+.classpath
+.project
+.settings/
+*.pom.xml.tag
+*.pom.xml.releaseBackup
+*.releaseBackup
+
+# NPM
+node_modules/
+dist/
+.angular/
+*.tgz
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build outputs
+out/
+build/
+
+# IDE
+*.iml
+*.iws
+*.ipr
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
