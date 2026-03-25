@@ -13,7 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
-import { LayoutComponent } from '../layout/components/layout.component';
+import { LayoutModule } from '../layout/layout.module';
 
 const routes: Routes = [
   {
@@ -23,7 +23,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [DashboardComponent, LayoutComponent],
+  declarations: [DashboardComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
@@ -37,7 +37,8 @@ const routes: Routes = [
     MatListModule,
     MatMenuModule,
     MatButtonModule,
-    MatDividerModule
+    MatDividerModule,
+    LayoutModule
   ]
 })
 export class DashboardModule { }

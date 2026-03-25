@@ -1,72 +1,83 @@
 <app-layout>
-  <div class="dashboard-container">
-    <h1>Dashboard Principal</h1>
+  <div class="dashboard-shell">
+    <section class="welcome-row">
+      <div>
+        <h1 class="headline-font">Bienvenido, Equipo Ejecutivo.</h1>
+        <p class="subtitle">Resumen estratégico del día para la intranet corporativa bancaria.</p>
+      </div>
+      <div class="date-panel executive-card">
+        <p class="label">Fecha actual</p>
+        <p class="date">Martes, 24 Marzo 2026</p>
+      </div>
+    </section>
 
-    <mat-grid-list cols="4" rowHeight="200px" gutterSize="20px">
-      <mat-grid-tile>
-        <mat-card class="widget-card">
-          <mat-card-content>
-            <div class="widget-icon">
-              <mat-icon>people</mat-icon>
-            </div>
-            <div class="widget-data">
-              <p class="widget-label">Usuarios Activos</p>
-              <p class="widget-value">145 / 150</p>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
+    <section class="hero-grid">
+      <article class="featured-news executive-card">
+        <div class="featured-overlay"></div>
+        <div class="featured-content">
+          <span class="executive-pill tag-public">Corp Update</span>
+          <h2 class="headline-font">Expansión Estratégica de Operaciones Regionales para H2</h2>
+          <p>
+            La dirección corporativa confirmó nuevas líneas de inversión tecnológica y
+            fortalecimiento del ecosistema digital bancario.
+          </p>
+          <div class="meta-row">
+            <span><mat-icon>calendar_today</mat-icon> Hoy</span>
+            <span><mat-icon>person</mat-icon> Dirección General</span>
+          </div>
+        </div>
+      </article>
 
-      <mat-grid-tile>
-        <mat-card class="widget-card">
-          <mat-card-content>
-            <div class="widget-icon">
-              <mat-icon>newspaper</mat-icon>
-            </div>
-            <div class="widget-data">
-              <p class="widget-label">Noticias Recientes</p>
-              <p class="widget-value">12</p>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
+      <aside class="quick-cards">
+        <article class="quick-card executive-card">
+          <h3 class="headline-font">Usuarios activos</h3>
+          <p class="metric">145 / 150</p>
+        </article>
+        <article class="quick-card executive-card">
+          <h3 class="headline-font">Noticias recientes</h3>
+          <p class="metric">12</p>
+        </article>
+        <article class="quick-card executive-card">
+          <h3 class="headline-font">Estado del sistema</h3>
+          <p class="metric ok">Operativo</p>
+        </article>
+      </aside>
+    </section>
 
-      <mat-grid-tile>
-        <mat-card class="widget-card">
-          <mat-card-content>
-            <div class="widget-icon">
-              <mat-icon>description</mat-icon>
-            </div>
-            <div class="widget-data">
-              <p class="widget-label">Documentos</p>
-              <p class="widget-value">287</p>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
+    <section class="documents-section executive-card">
+      <div class="section-head">
+        <h3 class="headline-font">Documentos Recientes</h3>
+        <button mat-button color="primary">Ver todo</button>
+      </div>
 
-      <mat-grid-tile>
-        <mat-card class="widget-card">
-          <mat-card-content>
-            <div class="widget-icon">
-              <mat-icon>security</mat-icon>
-            </div>
-            <div class="widget-data">
-              <p class="widget-label">Estado Sistema</p>
-              <p class="widget-value">OPERATIVO</p>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
-    </mat-grid-list>
+      <div class="doc-list">
+        <article class="doc-item">
+          <div class="doc-icon"><mat-icon>description</mat-icon></div>
+          <div class="doc-info">
+            <p class="doc-name">Politica_Ciberseguridad_v4.pdf</p>
+            <p class="doc-meta">Hace 2 horas</p>
+          </div>
+          <span class="executive-pill tag-conf">Confidential</span>
+        </article>
 
-    <mat-card class="recent-news-card">
-      <mat-card-header>
-        <mat-card-title>Noticias Recientes</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Cargando noticias...</p>
-      </mat-card-content>
-    </mat-card>
+        <article class="doc-item">
+          <div class="doc-icon"><mat-icon>table_chart</mat-icon></div>
+          <div class="doc-info">
+            <p class="doc-name">Reporte_Trimestral_Q1.xlsx</p>
+            <p class="doc-meta">Hace 5 horas</p>
+          </div>
+          <span class="executive-pill tag-res">Restricted</span>
+        </article>
+
+        <article class="doc-item">
+          <div class="doc-icon"><mat-icon>article</mat-icon></div>
+          <div class="doc-info">
+            <p class="doc-name">Minuta_Directorio_Marzo.docx</p>
+            <p class="doc-meta">Ayer</p>
+          </div>
+          <span class="executive-pill tag-public">Public</span>
+        </article>
+      </div>
+    </section>
   </div>
 </app-layout>

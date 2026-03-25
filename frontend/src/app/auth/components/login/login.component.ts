@@ -43,8 +43,10 @@ export class LoginComponent {
 
     this.authService.login(this.form.value).subscribe({
       next: (response) => {
-        if (response.success) {
-          this.router.navigate(['/app/dashboard']);
+        if (response?.success && response?.data?.token) {
+          this.router.navigateByUrl('/app/dashboard', { replaceUrl: true });
+        } else {
+          this.error = response?.message || 'No se recibió token de autenticación';
         }
       },
       error: (error) => {

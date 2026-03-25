@@ -1,53 +1,52 @@
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span class="spacer"></span>
-      <span class="app-title">Intranet Bancaria</span>
-      <span class="spacer"></span>
-      <button mat-icon-button [matMenuTriggerFor]="menu">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item>Mi Perfil</button>
-        <button mat-menu-item>Configuración</button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="logout()">Cerrar Sesión</button>
-      </mat-menu>
-    </mat-toolbar>
+<mat-toolbar class="topbar">
+  <button mat-icon-button class="mobile-menu" (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="app-title headline-font">Intranet Corporativa</span>
+  <span class="spacer"></span>
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item>Mi Perfil</button>
+    <button mat-menu-item>Configuración</button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">Cerrar Sesión</button>
+  </mat-menu>
+</mat-toolbar>
 
-    <mat-sidenav-container>
-      <mat-sidenav #sidenav mode="side" opened="true">
-        <mat-nav-list>
-          <mat-list-item>
-            <mat-icon matListItemIcon>dashboard</mat-icon>
-            <a matListItemTitle routerLink="/app/dashboard" (click)="sidenav.toggle()">
-              Dashboard
-            </a>
-          </mat-list-item>
-          <mat-list-item>
-            <mat-icon matListItemIcon>newspaper</mat-icon>
-            <a matListItemTitle routerLink="/app/noticias" (click)="sidenav.toggle()">
-              Noticias
-            </a>
-          </mat-list-item>
-          <mat-list-item>
-            <mat-icon matListItemIcon>description</mat-icon>
-            <a matListItemTitle routerLink="/app/documentos" (click)="sidenav.toggle()">
-              Documentos
-            </a>
-          </mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>
-            <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-            <a matListItemTitle routerLink="/app/admin" (click)="sidenav.toggle()">
-              Administración
-            </a>
-          </mat-list-item>
-        </mat-nav-list>
-      </mat-sidenav>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" opened="true" class="sidenav-shell">
+    <div class="brand-block">
+      <h1 class="headline-font">Executive Ledger</h1>
+      <p>Strategic Portal</p>
+    </div>
 
-      <mat-sidenav-content>
-        <ng-content></ng-content>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/app/dashboard" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Inicio</span>
+      </a>
+      <a mat-list-item routerLink="/app/noticias" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>newspaper</mat-icon>
+        <span matListItemTitle>Noticias Internas</span>
+      </a>
+      <a mat-list-item routerLink="/app/documentos" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>description</mat-icon>
+        <span matListItemTitle>Documentos</span>
+      </a>
+      <a mat-list-item routerLink="/app/chat" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>smart_toy</mat-icon>
+        <span matListItemTitle>Agente de Chat (IA)</span>
+      </a>
+      <a mat-list-item routerLink="/app/admin" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+        <span matListItemTitle>Administración</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content-shell">
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>

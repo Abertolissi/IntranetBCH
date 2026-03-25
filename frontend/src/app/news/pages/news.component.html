@@ -1,0 +1,83 @@
+<app-layout>
+  <div class="news-shell">
+    <section class="head-row">
+      <div>
+        <h1 class="headline-font">Newsroom</h1>
+        <p class="subtitle">Comunicaciones institucionales, regulatorias y operativas para el equipo corporativo.</p>
+      </div>
+      <button mat-raised-button color="primary" class="create-btn">
+        <mat-icon>add_circle</mat-icon>
+        Crear noticia
+      </button>
+    </section>
+
+    <section class="featured-grid">
+      <article class="featured-card executive-card">
+        <div class="featured-overlay"></div>
+        <div class="featured-content">
+          <span class="executive-pill badge">Institutional</span>
+          <h2 class="headline-font">Quarterly Strategic Review: crecimiento en activos digitales y expansión regional</h2>
+          <p>
+            El comité ejecutivo definió las prioridades del próximo trimestre con foco en
+            cumplimiento regulatorio, ciberseguridad y crecimiento digital.
+          </p>
+          <button mat-button class="read-btn">Leer reporte completo</button>
+        </div>
+      </article>
+
+      <aside class="highlights">
+        <article class="highlight-card executive-card">
+          <span class="pill soft">Trending Insight</span>
+          <h3 class="headline-font">Nuevo protocolo de ciberseguridad para unidades remotas</h3>
+          <a href="#">Leer más</a>
+        </article>
+        <article class="highlight-card executive-card">
+          <span class="pill soft">Regulation</span>
+          <h3 class="headline-font">Actualización de estándares para operaciones cross-border en Q4</h3>
+          <a href="#">Leer más</a>
+        </article>
+      </aside>
+    </section>
+
+    <section class="filters">
+      <button class="chip active">Todas</button>
+      <button class="chip">Institucional</button>
+      <button class="chip">Tecnología</button>
+      <button class="chip">RRHH</button>
+      <button class="chip">Regulación</button>
+      <button class="chip">Seguridad</button>
+    </section>
+
+    <section class="cards-grid">
+      <article class="news-card executive-card">
+        <div class="img-block"></div>
+        <div class="card-content">
+          <span class="executive-pill tag-tech">Technology</span>
+          <h4 class="headline-font">Nuevo motor de evaluación de riesgo impulsado por IA</h4>
+          <p>El modelo entra en producción para agilizar análisis de crédito en banca corporativa.</p>
+          <button mat-stroked-button color="primary">Leer más</button>
+        </div>
+      </article>
+
+      <article class="news-card executive-card">
+        <div class="img-block img-2"></div>
+        <div class="card-content">
+          <span class="executive-pill tag-hr">HR</span>
+          <h4 class="headline-font">Programa de bienestar corporativo con nuevas alianzas globales</h4>
+          <p>Iniciativas 24/7 para soporte al colaborador y desarrollo de liderazgo sostenible.</p>
+          <button mat-stroked-button color="primary">Leer más</button>
+        </div>
+      </article>
+
+      <article class="news-card executive-card">
+        <div class="img-block img-3"></div>
+        <div class="card-content">
+          <span class="executive-pill tag-sec">Security</span>
+          <h4 class="headline-font">Alerta de phishing: campaña dirigida a áreas financieras</h4>
+          <p>Se detectaron mensajes maliciosos con ingeniería social; revisar lineamientos SOC.</p>
+          <button mat-stroked-button color="primary">Leer más</button>
+        </div>
+      </article>
+    </section>
+  </div>
+</app-layout>

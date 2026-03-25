@@ -23,6 +23,10 @@ export const routes: Routes = [
         loadChildren: () => import('./documents/documents.module').then(m => m.DocumentsModule)
       },
       {
+        path: 'chat',
+        loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule)
+      },
+      {
         path: 'admin',
         loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
       }

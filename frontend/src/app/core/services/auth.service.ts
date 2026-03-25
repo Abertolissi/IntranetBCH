@@ -26,14 +26,16 @@ export class AuthService {
     return this.http.post<ApiResponse<LoginResponse>>(`${this.API_URL}/login`, request)
       .pipe(
         tap(response => {
-          if (response.success) {
+          if (response?.success && response?.data?.token) {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('refreshToken', response.data.refreshToken);
-            localStorage.setItem('user', JSON.stringify({
+            const user = {
               id: response.data.usuarioId,
               email: response.data.email,
               nombreCompleto: response.data.nombreCompleto
-            }));
+            };
+            localStorage.setItem('user', JSON.stringify(user));
+            this.currentUserSubject.next(user as any);
           }
         }),
         catchError(error => this.handleError(error))

@@ -1,0 +1,70 @@
+<app-layout>
+  <section class="chat-page">
+    <header class="chat-header">
+      <div>
+        <p class="eyebrow">Centro Conversacional</p>
+        <h1>Agente de Chat IA</h1>
+        <p class="subtitle">Asistente para sintesis, redaccion y soporte operativo interno.</p>
+      </div>
+      <button class="new-chat" mat-button>
+        <mat-icon>add</mat-icon>
+        Nueva conversacion
+      </button>
+    </header>
+
+    <div class="chat-shell">
+      <aside class="conversation-panel">
+        <div class="panel-title-row">
+          <h2>Historial</h2>
+          <span class="count">{{ conversations.length }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="conversation-item"
+          *ngFor="let item of conversations"
+          [class.active]="item.active"
+          (click)="selectConversation(item)">
+          <div class="item-title-row">
+            <h3>{{ item.title }}</h3>
+            <span>{{ item.time }}</span>
+          </div>
+          <p>{{ item.preview }}</p>
+        </button>
+      </aside>
+
+      <section class="conversation-main">
+        <div class="messages">
+          <article class="message" *ngFor="let message of messages" [class.user]="message.role === 'user'">
+            <div class="avatar">
+              <mat-icon>{{ message.role === 'assistant' ? 'smart_toy' : 'person' }}</mat-icon>
+            </div>
+            <div class="bubble">
+              <p>{{ message.content }}</p>
+              <span>{{ message.timestamp }}</span>
+            </div>
+          </article>
+        </div>
+
+        <form class="composer" (ngSubmit)="sendPrompt()">
+          <mat-form-field appearance="outline" class="prompt-field">
+            <textarea
+              matInput
+              rows="3"
+              placeholder="Escribe una instruccion para el agente..."
+              [(ngModel)]="prompt"
+              name="prompt"></textarea>
+          </mat-form-field>
+
+          <div class="composer-actions">
+            <p>Usa lenguaje claro para obtener respuestas mas precisas.</p>
+            <button type="submit" class="send-btn" mat-flat-button>
+              <mat-icon>send</mat-icon>
+              Enviar
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </section>
+</app-layout>

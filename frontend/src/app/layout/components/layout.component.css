@@ -1,11 +1,17 @@
-mat-toolbar {
+.topbar {
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: 64px;
+  background: rgba(247, 249, 251, 0.82);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 40px rgba(8, 27, 56, 0.06);
 }
 
 .app-title {
-  font-weight: 500;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #031632;
 }
 
 .spacer {
@@ -14,13 +20,57 @@ mat-toolbar {
 
 mat-sidenav-container {
   height: calc(100vh - 64px);
+  background: #f7f9fb;
 }
 
-mat-sidenav {
-  width: 250px;
+.sidenav-shell {
+  width: 280px;
+  background: #f2f4f6;
+  padding: 16px 12px;
+}
+
+.brand-block {
+  padding: 8px 12px 22px;
+}
+
+.brand-block h1 {
+  font-size: 18px;
+  line-height: 1.1;
+  color: #031632;
+}
+
+.brand-block p {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5f6570;
+  margin-top: 4px;
+  font-weight: 700;
 }
 
 mat-nav-list a {
-  text-decoration: none;
-  color: inherit;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  color: #3d4756;
+  font-weight: 600;
+}
+
+mat-nav-list a.active-link {
+  background: #ffffff;
+  color: #031632;
+  box-shadow: 0 8px 16px rgba(8, 27, 56, 0.08);
+}
+
+.content-shell {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu {
+    display: inline-flex;
+  }
+
+  .content-shell {
+    padding: 14px;
+  }
 }

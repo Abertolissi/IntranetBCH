@@ -1,0 +1,133 @@
+<app-layout>
+  <div class="docs-shell">
+    <section class="head-row">
+      <div>
+        <h1 class="headline-font">Sistema de Gestión Documental</h1>
+        <p class="subtitle">Acceso seguro a activos, normativas y reportes estratégicos.</p>
+      </div>
+      <div class="head-actions">
+        <button mat-stroked-button color="primary">
+          <mat-icon>filter_list</mat-icon>
+          Filtros
+        </button>
+        <button mat-raised-button color="primary">
+          <mat-icon>upload_file</mat-icon>
+          Upload Document
+        </button>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <article class="dropzone executive-card">
+        <div class="drop-icon"><mat-icon>cloud_upload</mat-icon></div>
+        <h2 class="headline-font">Arrastre archivos aquí para cargar</h2>
+        <p>Soporta PDF, XLSX, DOCX hasta 50MB. Encriptación AES-256 automática.</p>
+        <button class="link-btn">o busque en su ordenador</button>
+      </article>
+
+      <aside class="filters executive-card">
+        <div class="filter-head">
+          <h3 class="headline-font">Filtros Avanzados</h3>
+          <button class="clear-btn">Limpiar</button>
+        </div>
+
+        <label>Área Responsable</label>
+        <select>
+          <option>Todas las áreas</option>
+          <option>Finanzas</option>
+          <option>Legal</option>
+          <option>Riesgos</option>
+        </select>
+
+        <label>Confidencialidad</label>
+        <div class="pills">
+          <span class="executive-pill tag-public">Public</span>
+          <span class="executive-pill tag-res">Restricted</span>
+          <span class="executive-pill tag-conf">Confidential</span>
+        </div>
+
+        <label>Rango de Fecha</label>
+        <input type="date" />
+      </aside>
+    </section>
+
+    <section class="table-wrap executive-card">
+      <div class="table-head">
+        <h3 class="headline-font">Explorador de Archivos</h3>
+        <div class="table-actions">
+          <button mat-icon-button><mat-icon>view_module</mat-icon></button>
+          <button mat-icon-button><mat-icon>view_list</mat-icon></button>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre del Documento</th>
+              <th>Categoría</th>
+              <th>Área</th>
+              <th>Fecha</th>
+              <th>Confidencialidad</th>
+              <th>Estado</th>
+              <th class="right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="doc-main">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <div>
+                    <p class="doc-name">Reporte_Anual_Q4_2023.pdf</p>
+                    <p class="doc-meta">v2.4 • 12.4 MB</p>
+                  </div>
+                </div>
+              </td>
+              <td>Financiero</td>
+              <td>Contabilidad</td>
+              <td>24 Oct, 2023</td>
+              <td><span class="executive-pill tag-conf">Confidential</span></td>
+              <td><span class="state ok">Verificado</span></td>
+              <td class="right"><mat-icon>more_horiz</mat-icon></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="doc-main">
+                  <mat-icon>description</mat-icon>
+                  <div>
+                    <p class="doc-name">Manual_Operaciones_Corporativas.docx</p>
+                    <p class="doc-meta">v1.8 • 3.1 MB</p>
+                  </div>
+                </div>
+              </td>
+              <td>Operaciones</td>
+              <td>Compliance</td>
+              <td>15 Oct, 2023</td>
+              <td><span class="executive-pill tag-res">Restricted</span></td>
+              <td><span class="state">Vigente</span></td>
+              <td class="right"><mat-icon>more_horiz</mat-icon></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="doc-main">
+                  <mat-icon>table_chart</mat-icon>
+                  <div>
+                    <p class="doc-name">Proyeccion_Liquidez_Q1.xlsx</p>
+                    <p class="doc-meta">v3.0 • 5.8 MB</p>
+                  </div>
+                </div>
+              </td>
+              <td>Tesorería</td>
+              <td>Finanzas</td>
+              <td>11 Oct, 2023</td>
+              <td><span class="executive-pill tag-public">Public</span></td>
+              <td><span class="state">Aprobado</span></td>
+              <td class="right"><mat-icon>more_horiz</mat-icon></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</app-layout>
