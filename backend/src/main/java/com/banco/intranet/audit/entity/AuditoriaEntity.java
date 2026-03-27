@@ -43,7 +43,7 @@ public class AuditoriaEntity {
     private String detalles;
 
     @Column(name = "nivel", length = 50)
-    private String valuable;
+    private String nivel;
 
     @Column(nullable = false, length = 20)
     private String resultado;

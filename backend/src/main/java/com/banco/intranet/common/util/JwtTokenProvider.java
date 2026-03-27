@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,10 +43,11 @@ public class JwtTokenProvider {
     /**
      * Genera un token JWT
      */
-    public String generateToken(String username, String email, String userId) {
+    public String generateToken(String username, String email, String userId, Collection<String> roles) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
         claims.put("userId", userId);
+        claims.put("roles", roles == null ? new ArrayList<>() : roles);
         return createToken(claims, username, jwtExpiration);
     }
 
@@ -82,6 +86,19 @@ public class JwtTokenProvider {
      */
     public String getEmailFromToken(String token) {
         return (String) getClaimsFromToken(token).get("email");
+    }
+
+    /**
+     * Obtiene roles desde el token
+     */
+    public List<String> getRolesFromToken(String token) {
+        Object roles = getClaimsFromToken(token).get("roles");
+        if (roles instanceof List<?>) {
+            return ((List<?>) roles).stream()
+                    .map(String::valueOf)
+                    .toList();
+        }
+        return new ArrayList<>();
     }
 
     /**

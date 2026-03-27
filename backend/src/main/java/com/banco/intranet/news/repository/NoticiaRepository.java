@@ -22,4 +22,6 @@ public interface NoticiaRepository extends JpaRepository<NoticiaEntity, Long> {
     List<NoticiaEntity> findByActivaTrueAndCategoriaOrderByFechaPublicacionDesc(String categoria);
 
     Page<NoticiaEntity> findByTituloContainingIgnoreCaseAndActiva(String titulo, Boolean activa, Pageable pageable);
+
+    long countByActivaTrue();
 }

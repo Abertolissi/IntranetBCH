@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +91,14 @@ public class AuthService {
         usuario.setFechaUltimoLogin(LocalDateTime.now());
         usuarioRepository.save(usuario);
 
-        String token = jwtTokenProvider.generateToken(usuario.getEmail(), usuario.getEmail(), usuario.getId().toString());
+        List<String> roles = resolverRoles(usuario);
+
+        String token = jwtTokenProvider.generateToken(
+            usuario.getEmail(),
+            usuario.getEmail(),
+            usuario.getId().toString(),
+            roles
+        );
         String refreshToken = jwtTokenProvider.generateRefreshToken(usuario.getEmail());
 
         log.info("Login exitoso para usuario: {}", usuario.getEmail());
@@ -116,7 +125,14 @@ public class AuthService {
         UsuarioEntity usuario = usuarioRepository.findByEmail(username)
             .orElseThrow(() -> new AppException("USER_NOT_FOUND", "Usuario no encontrado", 404));
 
-        return jwtTokenProvider.generateToken(usuario.getEmail(), usuario.getEmail(), usuario.getId().toString());
+        List<String> roles = resolverRoles(usuario);
+
+        return jwtTokenProvider.generateToken(
+            usuario.getEmail(),
+            usuario.getEmail(),
+            usuario.getId().toString(),
+            roles
+        );
     }
 
     /**
@@ -125,5 +141,24 @@ public class AuthService {
     public UsuarioEntity obtenerUsuarioActual(String email) {
         return usuarioRepository.findByEmail(email)
             .orElseThrow(() -> new AppException("USER_NOT_FOUND", "Usuario no encontrado", 404));
+    }
+
+    private List<String> resolverRoles(UsuarioEntity usuario) {
+        List<String> roles = usuario.getRoles().stream()
+                .map(r -> r.getNombre())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        if (!roles.isEmpty()) {
+            return roles;
+        }
+
+        // Fallback para ambientes sin datos de relación usuario_rol inicializados.
+        if ("admin@banco.local".equalsIgnoreCase(usuario.getEmail())) {
+            roles.add("ADMIN");
+        } else {
+            roles.add("USUARIO");
+        }
+
+        return roles;
     }
 }

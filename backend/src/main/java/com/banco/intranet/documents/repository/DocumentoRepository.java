@@ -24,4 +24,6 @@ public interface DocumentoRepository extends JpaRepository<DocumentoEntity, Long
     Page<DocumentoEntity> findByTipo(String tipo, Pageable pageable);
 
     List<DocumentoEntity> findByEtiquetasContainingIgnoreCaseAndActivo(String etiqueta, Boolean activo);
+
+    long countByActivoTrue();
 }
