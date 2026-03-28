@@ -65,6 +65,7 @@ public class SecurityConfig {
             .authorizeRequests(authorize -> authorize
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/actuator/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/storage/documents/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )

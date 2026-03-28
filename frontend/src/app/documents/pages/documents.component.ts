@@ -16,6 +16,18 @@ export class DocumentsComponent implements OnInit {
   clasificacionSeleccionada = '';
   cargando = false;
   error: string | null = null;
+  subiendoArchivo = false;
+
+  archivoSeleccionado: File | null = null;
+  formularioCarga = {
+    titulo: '',
+    clasificacion: 'INTERNO',
+    descripcion: '',
+    departamento: '',
+    etiquetas: '',
+    version: '1.0',
+    autorNombre: ''
+  };
 
   pagina = 0;
   readonly tamanoPagina = 10;
@@ -129,31 +141,81 @@ export class DocumentsComponent implements OnInit {
     });
   }
 
-  crearDocumentoDemo(): void {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const payload: Partial<Documento> = {
-      titulo: `Documento Demo ${timestamp}`,
-      descripcion: 'Documento generado desde el front para validar el modulo.',
-      tipo: 'PDF',
-      clasificacion: 'INTERNO',
-      rutaArchivo: '/storage/documents/documento-demo.pdf',
-      tamano: 1024,
-      departamento: 'TI',
-      autorNombre: 'Frontend',
-      etiquetas: 'demo,ui',
-      version: '1.0'
-    };
+  seleccionarArchivo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length > 0 ? input.files[0] : null;
+    this.archivoSeleccionado = file;
+  }
 
-    this.documentsService.crearDocumento(payload).subscribe({
-      next: () => {
-        this.snackBar.open('Documento creado correctamente.', 'Cerrar', { duration: 2500 });
-        this.pagina = 0;
-        this.cargarDocumentos();
-      },
-      error: () => {
-        this.snackBar.open('No se pudo crear el documento. Verifique permisos.', 'Cerrar', { duration: 3000 });
-      }
-    });
+  cargarDocumento(): void {
+    if (this.subiendoArchivo) {
+      return;
+    }
+
+    if (!this.archivoSeleccionado) {
+      this.snackBar.open('Debe seleccionar un archivo para cargar.', 'Cerrar', {
+        duration: 3000
+      });
+      return;
+    }
+
+    if (!this.formularioCarga.titulo.trim()) {
+      this.snackBar.open('El titulo es obligatorio.', 'Cerrar', {
+        duration: 3000
+      });
+      return;
+    }
+
+    if (!this.formularioCarga.clasificacion.trim()) {
+      this.snackBar.open('La clasificacion es obligatoria.', 'Cerrar', {
+        duration: 3000
+      });
+      return;
+    }
+
+    this.subiendoArchivo = true;
+    this.documentsService
+      .subirDocumento({
+        archivo: this.archivoSeleccionado,
+        titulo: this.formularioCarga.titulo.trim(),
+        clasificacion: this.formularioCarga.clasificacion.trim(),
+        descripcion: this.formularioCarga.descripcion,
+        departamento: this.formularioCarga.departamento,
+        etiquetas: this.formularioCarga.etiquetas,
+        version: this.formularioCarga.version,
+        autorNombre: this.formularioCarga.autorNombre
+      })
+      .pipe(finalize(() => {
+        this.subiendoArchivo = false;
+      }))
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Documento cargado correctamente.', 'Cerrar', {
+            duration: 2500
+          });
+          this.reiniciarFormularioCarga();
+          this.pagina = 0;
+          this.cargarDocumentos();
+        },
+        error: () => {
+          this.snackBar.open('No se pudo cargar el documento. Verifique permisos o formato.', 'Cerrar', {
+            duration: 3500
+          });
+        }
+      });
+  }
+
+  private reiniciarFormularioCarga(): void {
+    this.archivoSeleccionado = null;
+    this.formularioCarga = {
+      titulo: '',
+      clasificacion: 'INTERNO',
+      descripcion: '',
+      departamento: '',
+      etiquetas: '',
+      version: '1.0',
+      autorNombre: ''
+    };
   }
 
   obtenerUrlArchivo(rutaArchivo?: string): string {

@@ -48,6 +48,42 @@ export class DocumentsService {
       .pipe(map((response) => response.data));
   }
 
+  subirDocumento(payload: {
+    archivo: File;
+    titulo: string;
+    clasificacion: string;
+    descripcion?: string;
+    departamento?: string;
+    etiquetas?: string;
+    version?: string;
+    autorNombre?: string;
+  }): Observable<Documento> {
+    const formData = new FormData();
+    formData.append('archivo', payload.archivo);
+    formData.append('titulo', payload.titulo);
+    formData.append('clasificacion', payload.clasificacion);
+
+    if (payload.descripcion?.trim()) {
+      formData.append('descripcion', payload.descripcion.trim());
+    }
+    if (payload.departamento?.trim()) {
+      formData.append('departamento', payload.departamento.trim());
+    }
+    if (payload.etiquetas?.trim()) {
+      formData.append('etiquetas', payload.etiquetas.trim());
+    }
+    if (payload.version?.trim()) {
+      formData.append('version', payload.version.trim());
+    }
+    if (payload.autorNombre?.trim()) {
+      formData.append('autorNombre', payload.autorNombre.trim());
+    }
+
+    return this.http
+      .post<ApiResponse<Documento>>(`${this.apiUrl}/upload`, formData)
+      .pipe(map((response) => response.data));
+  }
+
   obtenerBackendBaseUrl(): string {
     return environment.apiUrl.replace(/\/api\/?$/, '');
   }

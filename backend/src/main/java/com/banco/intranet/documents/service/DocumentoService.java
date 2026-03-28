@@ -5,10 +5,22 @@ import com.banco.intranet.documents.dto.DocumentoDTO;
 import com.banco.intranet.documents.entity.DocumentoEntity;
 import com.banco.intranet.documents.repository.DocumentoRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.Normalizer;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Servicio de gestión de documentos.
@@ -19,9 +31,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class DocumentoService {
 
     private final DocumentoRepository documentoRepository;
+    private final Path storageRoot;
+    private final long maxUploadSize;
 
-    public DocumentoService(DocumentoRepository documentoRepository) {
+    public DocumentoService(
+            DocumentoRepository documentoRepository,
+            @Value("${app.upload.dir:storage/documents}") String uploadDir,
+            @Value("${app.upload.max-size:52428800}") long maxUploadSize) {
         this.documentoRepository = documentoRepository;
+        this.storageRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
+        this.maxUploadSize = maxUploadSize;
+
+        try {
+            Files.createDirectories(this.storageRoot);
+        } catch (IOException ex) {
+            throw new AppException("DOC_STORAGE_INIT_ERROR", "No se pudo inicializar el almacenamiento de documentos", 500, ex);
+        }
     }
 
     public DocumentoDTO obtenerPorId(Long id) {
@@ -54,6 +79,30 @@ public class DocumentoService {
         DocumentoEntity guardado = documentoRepository.save(documento);
         log.info("Documento creado: {}", guardado.getId());
         return mapearADTO(guardado);
+    }
+
+    public DocumentoDTO crearConArchivo(DocumentoDTO dto, MultipartFile archivo) {
+        validarArchivo(archivo);
+
+        String nombreOriginal = archivo.getOriginalFilename() == null ? "documento" : archivo.getOriginalFilename();
+        String nombreSeguro = sanitizarNombreArchivo(nombreOriginal);
+        String extension = obtenerExtension(nombreSeguro);
+        String nombreFinal = UUID.randomUUID() + "_" + nombreSeguro;
+        Path destino = storageRoot.resolve(nombreFinal);
+
+        try (InputStream inputStream = archivo.getInputStream()) {
+            Files.copy(inputStream, destino, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            throw new AppException("DOC_UPLOAD_ERROR", "No se pudo guardar el archivo del documento", 500, ex);
+        }
+
+        dto.setTipo(determinarTipoDocumento(extension));
+        dto.setRutaArchivo("/storage/documents/" + nombreFinal);
+        dto.setTamano(archivo.getSize());
+
+        DocumentoDTO creado = crear(dto);
+        log.info("Documento cargado con archivo: {}", creado.getId());
+        return creado;
     }
 
     public DocumentoDTO actualizar(Long id, DocumentoDTO dto) {
@@ -132,5 +181,40 @@ public class DocumentoService {
         }
         int idx = rutaArchivo.lastIndexOf('.');
         return rutaArchivo.substring(idx + 1).toLowerCase();
+    }
+
+    private void validarArchivo(MultipartFile archivo) {
+        if (archivo == null || archivo.isEmpty()) {
+            throw new AppException("DOC_FILE_REQUIRED", "Debe adjuntar un archivo", 400);
+        }
+
+        if (archivo.getSize() > maxUploadSize) {
+            throw new AppException("DOC_FILE_TOO_LARGE", "El archivo excede el tamaño permitido", 400);
+        }
+    }
+
+    private String sanitizarNombreArchivo(String nombre) {
+        String normalizado = Normalizer.normalize(nombre, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+
+        String sinSeparadores = normalizado
+                .replace("\\", "_")
+                .replace("/", "_");
+
+        String limpio = sinSeparadores.replaceAll("[^a-zA-Z0-9._-]", "_")
+                .replaceAll("_+", "_")
+                .replaceAll("^_+|_+$", "");
+
+        if (limpio.isBlank()) {
+            return "documento.bin";
+        }
+        return limpio;
+    }
+
+    private String determinarTipoDocumento(String extension) {
+        if (extension == null || extension.isBlank()) {
+            return "BIN";
+        }
+        return extension.toUpperCase(Locale.ROOT);
     }
 }

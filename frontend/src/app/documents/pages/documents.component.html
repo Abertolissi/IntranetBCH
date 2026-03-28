@@ -10,10 +10,6 @@
           <mat-icon>refresh</mat-icon>
           Refrescar
         </button>
-        <button mat-stroked-button color="primary" (click)="crearDocumentoDemo()">
-          <mat-icon>note_add</mat-icon>
-          Crear Demo
-        </button>
         <button mat-stroked-button color="primary" (click)="limpiarFiltros()">
           <mat-icon>cleaning_services</mat-icon>
           Limpiar
@@ -28,11 +24,63 @@
     <section class="main-grid">
       <article class="dropzone executive-card">
         <div class="drop-icon"><mat-icon>description</mat-icon></div>
-        <h2 class="headline-font">Documentos activos en tiempo real</h2>
+        <h2 class="headline-font">Carga de Documentos</h2>
         <p>
-          El listado se obtiene desde la API y permite buscar por título, filtrar por clasificación y
-          registrar descargas por documento.
+          Adjunta un archivo y completa los datos principales para registrarlo en el sistema.
         </p>
+
+        <div class="upload-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Titulo</mat-label>
+            <input matInput [(ngModel)]="formularioCarga.titulo" placeholder="Ej: Manual de Onboarding" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Clasificacion</mat-label>
+            <mat-select [(ngModel)]="formularioCarga.clasificacion">
+              <mat-option value="INTERNO">INTERNO</mat-option>
+              <mat-option value="PUBLICO">PUBLICO</mat-option>
+              <mat-option value="CONFIDENCIAL">CONFIDENCIAL</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Departamento</mat-label>
+            <input matInput [(ngModel)]="formularioCarga.departamento" placeholder="Ej: TI" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Version</mat-label>
+            <input matInput [(ngModel)]="formularioCarga.version" placeholder="1.0" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Descripcion</mat-label>
+            <textarea matInput rows="2" [(ngModel)]="formularioCarga.descripcion"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Etiquetas</mat-label>
+            <input matInput [(ngModel)]="formularioCarga.etiquetas" placeholder="seguridad,politicas" />
+          </mat-form-field>
+        </div>
+
+        <div class="upload-actions">
+          <label class="file-picker" for="document-file-input">
+            <mat-icon>attach_file</mat-icon>
+            {{ archivoSeleccionado ? archivoSeleccionado.name : 'Seleccionar archivo' }}
+          </label>
+          <input
+            id="document-file-input"
+            type="file"
+            (change)="seleccionarArchivo($event)"
+            hidden />
+
+          <button mat-raised-button color="primary" (click)="cargarDocumento()" [disabled]="subiendoArchivo">
+            <mat-icon>{{ subiendoArchivo ? 'hourglass_top' : 'cloud_upload' }}</mat-icon>
+            {{ subiendoArchivo ? 'Cargando...' : 'Cargar Documento' }}
+          </button>
+        </div>
       </article>
 
       <aside class="filters executive-card">
