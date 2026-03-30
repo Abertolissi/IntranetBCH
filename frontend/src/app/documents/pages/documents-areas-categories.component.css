@@ -1,0 +1,296 @@
+.explorer-shell {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  gap: 22px;
+}
+
+.hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.eyebrow {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 10px;
+  font-weight: 700;
+  color: #586377;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  line-height: 1.12;
+  color: #031632;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.view-toggle button.active {
+  background: #031632;
+  color: #ffffff;
+}
+
+.toolbar-card {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-field,
+.order-field {
+  width: 100%;
+}
+
+.state-card {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #4a6774;
+}
+
+.state-card.error {
+  color: #93000a;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.section-head h2 {
+  color: #031632;
+  font-size: 1.45rem;
+}
+
+.section-head p {
+  color: #4a6774;
+  font-size: 0.92rem;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.category-card {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.cat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f0ff;
+  color: #0f2a56;
+}
+
+.category-card h3 {
+  font-size: 1.1rem;
+  color: #031632;
+}
+
+.category-card p {
+  color: #3e4a5a;
+  font-weight: 700;
+}
+
+.category-card small {
+  color: #6a7383;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+}
+
+.categories-list {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 10px;
+  color: #5f6570;
+  padding: 12px;
+  border-bottom: 1px solid rgba(197, 198, 206, 0.5);
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(197, 198, 206, 0.3);
+  color: #1f252d;
+}
+
+.cat-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.areas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+.area-card {
+  display: grid;
+  gap: 10px;
+}
+
+.area-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #031632;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.area-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.area-title h3 {
+  font-size: 1.05rem;
+}
+
+.area-doc {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(117, 119, 126, 0.2);
+  border-left: 4px solid #7aa8d4;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.area-doc strong {
+  color: #031632;
+  font-size: 0.93rem;
+}
+
+.area-doc p {
+  color: #6c7480;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.chip {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 999px;
+  padding: 5px 9px;
+}
+
+.chip-public {
+  background: #c6e4f4;
+  color: #2e4b57;
+}
+
+.chip-res {
+  background: #d0e4ff;
+  color: #00497b;
+}
+
+.chip-conf {
+  background: #ffdad6;
+  color: #93000a;
+}
+
+.other-areas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.area-mini {
+  border: 0;
+  cursor: pointer;
+  text-align: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  background: #ffffff;
+}
+
+.area-mini mat-icon {
+  font-size: 30px;
+  width: 30px;
+  height: 30px;
+  color: #4a6774;
+}
+
+.area-mini h4 {
+  color: #031632;
+  font-size: 0.95rem;
+}
+
+.area-mini p {
+  color: #6d7582;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.area-detail {
+  overflow: auto;
+}
+
+.area-table-wrap {
+  overflow: auto;
+}
+
+@media (max-width: 960px) {
+  .toolbar-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

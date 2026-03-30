@@ -5,7 +5,10 @@ import com.banco.intranet.common.exception.AppException;
 import com.banco.intranet.documents.dto.DocumentoDTO;
 import com.banco.intranet.documents.service.DocumentoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Controlador de documentos.
@@ -104,5 +108,22 @@ public class DocumentoController {
     public ResponseEntity<ApiResponseDTO<?>> registrarDescarga(@PathVariable Long id) {
         documentoService.incrementarDescargas(id);
         return ResponseEntity.ok(ApiResponseDTO.success(null, "Descarga registrada"));
+    }
+
+    @GetMapping("/{id}/archivo")
+    public ResponseEntity<Resource> descargarArchivo(@PathVariable Long id) {
+        Resource resource = documentoService.obtenerArchivoParaDescarga(id);
+        String nombreDescarga = documentoService.construirNombreDescarga(id);
+        String tipoMime = documentoService.obtenerTipoMime(id);
+
+        documentoService.incrementarDescargas(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(tipoMime))
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename(nombreDescarga, StandardCharsets.UTF_8)
+                        .build()
+                        .toString())
+                .body(resource);
     }
 }

@@ -28,6 +28,17 @@ h1 {
   gap: 10px;
 }
 
+.view-switch {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.view-switch button.active-view {
+  background: #031632;
+  color: #ffffff;
+}
+
 .main-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
@@ -349,6 +360,11 @@ a.disabled-link {
   .head-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .view-switch {
+    width: 100%;
+    flex-wrap: wrap;
   }
 
   .head-actions {

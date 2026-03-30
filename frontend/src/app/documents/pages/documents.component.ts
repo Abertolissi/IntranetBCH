@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 import { Documento } from '../../core/models/app.models';
 import { DocumentPage, DocumentsService } from '../services/documents.service';
@@ -10,6 +13,7 @@ import { DocumentPage, DocumentsService } from '../services/documents.service';
   styleUrls: ['./documents.component.css']
 })
 export class DocumentsComponent implements OnInit {
+  vistaActiva: 'carga' | 'visualizacion' = 'visualizacion';
   documentos: Documento[] = [];
   clasificaciones: string[] = [];
   terminoBusqueda = '';
@@ -36,11 +40,35 @@ export class DocumentsComponent implements OnInit {
 
   constructor(
     private documentsService: DocumentsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.cargarDocumentos();
+    this.route.paramMap.subscribe((params) => {
+      const vista = params.get('vista');
+      this.vistaActiva = vista === 'carga' ? 'carga' : 'visualizacion';
+
+      if (this.mostrarVisualizacion) {
+        this.cargarDocumentos();
+      }
+    });
+  }
+
+  get mostrarCarga(): boolean {
+    return this.vistaActiva === 'carga';
+  }
+
+  get mostrarVisualizacion(): boolean {
+    return this.vistaActiva === 'visualizacion';
+  }
+
+  irAVista(vista: 'carga' | 'visualizacion'): void {
+    if (this.vistaActiva === vista) {
+      return;
+    }
+    this.router.navigate(['/app/documentos', vista]);
   }
 
   get paginaActual(): number {
@@ -120,21 +148,41 @@ export class DocumentsComponent implements OnInit {
     this.cargarDocumentos();
   }
 
-  registrarDescarga(documento: Documento, event?: MouseEvent): void {
+  descargarDocumento(documento: Documento): void {
     if (!documento.activo || !documento.rutaArchivo) {
-      event?.preventDefault();
       this.snackBar.open('El documento no tiene un archivo disponible para abrir.', 'Cerrar', {
         duration: 3000
       });
       return;
     }
 
-    this.documentsService.registrarDescarga(documento.id).subscribe({
-      next: () => {
+    this.documentsService.descargarDocumento(documento.id).subscribe({
+      next: (response) => {
+        const blob = response.body;
+        if (!blob) {
+          this.snackBar.open('No se pudo descargar el documento.', 'Cerrar', {
+            duration: 3000
+          });
+          return;
+        }
+
+        const nombre = this.extraerNombreDescarga(response) || this.generarNombreDescarga(documento);
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = nombre;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+
         documento.numeroDescargas = (documento.numeroDescargas ?? 0) + 1;
       },
-      error: () => {
-        this.snackBar.open('No se pudo registrar la descarga. Intente nuevamente.', 'Cerrar', {
+      error: (error: HttpErrorResponse) => {
+        if (error.status === 404 && documento.rutaArchivo) {
+          this.descargarDesdeRutaDirecta(documento);
+          return;
+        }
+
+        this.snackBar.open('No se pudo descargar el documento. Intente nuevamente.', 'Cerrar', {
           duration: 3000
         });
       }
@@ -247,6 +295,64 @@ export class DocumentsComponent implements OnInit {
 
   trackByDocumento(index: number, documento: Documento): number {
     return documento.id ?? index;
+  }
+
+  private extraerNombreDescarga(response: HttpResponse<Blob>): string | null {
+    const contentDisposition = response.headers.get('content-disposition');
+    if (!contentDisposition) {
+      return null;
+    }
+
+    const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match && utf8Match[1]) {
+      return decodeURIComponent(utf8Match[1]);
+    }
+
+    const simpleMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+    if (simpleMatch && simpleMatch[1]) {
+      return simpleMatch[1];
+    }
+
+    return null;
+  }
+
+  private generarNombreDescarga(documento: Documento): string {
+    const tituloBase = (documento.titulo || 'documento').trim().replace(/[\\/:*?"<>|]/g, '_');
+    const ext = (documento.tipo || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    if (!ext) {
+      return tituloBase;
+    }
+    return `${tituloBase}.${ext}`;
+  }
+
+  private descargarDesdeRutaDirecta(documento: Documento): void {
+    if (!documento.rutaArchivo) {
+      return;
+    }
+
+    this.documentsService.descargarDocumentoDesdeRuta(documento.rutaArchivo).subscribe({
+      next: (blob) => {
+        const nombre = this.generarNombreDescarga(documento);
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = nombre;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+
+        this.documentsService.registrarDescarga(documento.id).subscribe({
+          next: () => {
+            documento.numeroDescargas = (documento.numeroDescargas ?? 0) + 1;
+          }
+        });
+      },
+      error: () => {
+        this.snackBar.open('No se pudo descargar el documento. Intente nuevamente.', 'Cerrar', {
+          duration: 3000
+        });
+      }
+    });
   }
 
   private filtrarPorClasificacion(documentos: Documento[]): Documento[] {

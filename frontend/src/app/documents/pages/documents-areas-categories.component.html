@@ -1,0 +1,170 @@
+<app-layout>
+  <div class="explorer-shell">
+    <section class="hero-row">
+      <div>
+        <span class="eyebrow">Repositorio Central</span>
+        <h1 class="headline-font">Explorador Documental por Areas y Categorias</h1>
+      </div>
+      <div class="hero-actions">
+        <div class="view-toggle">
+          <button mat-stroked-button color="primary" [class.active]="modoVista === 'grid'" (click)="modoVista = 'grid'">
+            <mat-icon>grid_view</mat-icon>
+            Cuadricula
+          </button>
+          <button mat-stroked-button color="primary" [class.active]="modoVista === 'list'" (click)="modoVista = 'list'">
+            <mat-icon>view_list</mat-icon>
+            Lista
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar-card executive-card">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar por documento, area, categoria o etiqueta</mat-label>
+        <input matInput [(ngModel)]="terminoBusqueda" (input)="aplicarBusqueda()" placeholder="Ej: normativa, riesgo, RRHH" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="order-field">
+        <mat-label>Ordenar categorias por</mat-label>
+        <mat-select [(ngModel)]="modoOrden" (selectionChange)="cambiarOrden()">
+          <mat-option value="popular">Mas consultados</mat-option>
+          <mat-option value="recent">Recientes</mat-option>
+          <mat-option value="alpha">A-Z</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button color="primary" (click)="cargarDocumentos()">
+        <mat-icon>refresh</mat-icon>
+        Refrescar
+      </button>
+    </section>
+
+    <section class="state-card executive-card" *ngIf="cargando">
+      <mat-spinner diameter="34"></mat-spinner>
+      <p>Cargando estructura documental...</p>
+    </section>
+
+    <section class="state-card executive-card error" *ngIf="!cargando && error">
+      <mat-icon>error</mat-icon>
+      <p>{{ error }}</p>
+    </section>
+
+    <section *ngIf="!cargando && !error">
+      <div class="section-head">
+        <h2 class="headline-font">Agrupacion por Categorias</h2>
+      </div>
+
+      <div class="categories-grid" *ngIf="modoVista === 'grid'">
+        <article class="category-card executive-card" *ngFor="let categoria of categorias">
+          <div class="cat-icon">
+            <mat-icon>{{ obtenerIconoCategoria(categoria.nombre) }}</mat-icon>
+          </div>
+          <h3 class="headline-font">{{ categoria.nombre }}</h3>
+          <p>{{ categoria.cantidad }} archivos</p>
+          <small>{{ categoria.totalDescargas }} descargas</small>
+        </article>
+      </div>
+
+      <div class="categories-list executive-card" *ngIf="modoVista === 'list'">
+        <table>
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Archivos</th>
+              <th>Descargas</th>
+              <th>Ultima actualizacion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let categoria of categorias">
+              <td>
+                <div class="cat-name">
+                  <mat-icon>{{ obtenerIconoCategoria(categoria.nombre) }}</mat-icon>
+                  <span>{{ categoria.nombre }}</span>
+                </div>
+              </td>
+              <td>{{ categoria.cantidad }}</td>
+              <td>{{ categoria.totalDescargas }}</td>
+              <td>{{ categoria.ultimaActualizacion ? (categoria.ultimaActualizacion | date:'dd/MM/yyyy HH:mm') : 'N/A' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section *ngIf="!cargando && !error">
+      <div class="section-head">
+        <h2 class="headline-font">Documentos por Area / Gerencia</h2>
+        <p>Navega por cada area y accede a sus documentos mas recientes.</p>
+      </div>
+
+      <div class="areas-grid">
+        <article class="area-card executive-card" *ngFor="let area of areasPrincipales">
+          <header>
+            <div class="area-title">
+              <mat-icon>{{ obtenerIconoArea(area.nombre) }}</mat-icon>
+              <h3 class="headline-font">{{ area.nombre }}</h3>
+            </div>
+            <small>{{ area.documentos.length }} archivos</small>
+          </header>
+
+          <div class="area-doc" *ngFor="let documento of area.documentos.slice(0, 2)">
+            <div>
+              <strong>{{ documento.titulo }}</strong>
+              <p>{{ documento.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+            <span [class]="'chip ' + claseChip(documento)">{{ documento.clasificacion || 'General' }}</span>
+          </div>
+
+          <button mat-button color="primary" (click)="seleccionarArea(area)">
+            Ver todos los archivos de {{ area.nombre }}
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </article>
+      </div>
+
+      <div class="other-areas">
+        <button class="area-mini executive-card" *ngFor="let area of areasSecundarias" (click)="seleccionarArea(area)">
+          <mat-icon>{{ obtenerIconoArea(area.nombre) }}</mat-icon>
+          <h4>{{ area.nombre }}</h4>
+          <p>{{ area.documentos.length }} documentos</p>
+        </button>
+      </div>
+    </section>
+
+    <section class="area-detail executive-card" *ngIf="areaActiva">
+      <div class="section-head">
+        <h2 class="headline-font">{{ areaActiva.nombre }}</h2>
+        <p>{{ areaActiva.documentos.length }} documentos disponibles</p>
+      </div>
+
+      <div class="area-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Categoria</th>
+              <th>Version</th>
+              <th>Descargas</th>
+              <th>Accion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let documento of areaActiva.documentos">
+              <td>{{ documento.titulo }}</td>
+              <td>{{ documento.clasificacion || 'General' }}</td>
+              <td>{{ documento.version || '1.0' }}</td>
+              <td>{{ documento.numeroDescargas || 0 }}</td>
+              <td>
+                <button mat-icon-button color="primary" (click)="descargarDocumento(documento)">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</app-layout>

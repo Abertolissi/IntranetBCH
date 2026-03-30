@@ -61,6 +61,40 @@ mat-nav-list a.active-link {
   box-shadow: 0 8px 16px rgba(8, 27, 56, 0.08);
 }
 
+.menu-group {
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.menu-group.group-active {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.menu-group-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4a5565;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  padding: 4px 8px 8px;
+}
+
+.menu-group-label mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+mat-nav-list a.submenu-link {
+  margin-left: 8px;
+  width: calc(100% - 8px);
+}
+
 .content-shell {
   padding: 24px;
 }

@@ -10,10 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -128,6 +131,58 @@ public class DocumentoService {
                 .orElseThrow(() -> new AppException("DOC_NOT_FOUND", "Documento no encontrado", 404));
         documento.setNumeroDescargas((documento.getNumeroDescargas() == null ? 0 : documento.getNumeroDescargas()) + 1);
         documentoRepository.save(documento);
+    }
+
+    public Resource obtenerArchivoParaDescarga(Long id) {
+        DocumentoEntity documento = documentoRepository.findById(id)
+                .orElseThrow(() -> new AppException("DOC_NOT_FOUND", "Documento no encontrado", 404));
+
+        Path archivo = resolverRutaLocal(documento.getRutaArchivo());
+        if (!Files.exists(archivo) || !Files.isReadable(archivo)) {
+            throw new AppException("DOC_FILE_NOT_FOUND", "El archivo del documento no existe", 404);
+        }
+
+        try {
+            return new UrlResource(archivo.toUri());
+        } catch (MalformedURLException ex) {
+            throw new AppException("DOC_FILE_INVALID", "Ruta de archivo inválida", 500, ex);
+        }
+    }
+
+    public String construirNombreDescarga(Long id) {
+        DocumentoEntity documento = documentoRepository.findById(id)
+                .orElseThrow(() -> new AppException("DOC_NOT_FOUND", "Documento no encontrado", 404));
+
+        String tituloLimpio = sanitizarNombreArchivo(documento.getTitulo() == null ? "documento" : documento.getTitulo());
+        String extension = (documento.getExtension() == null || documento.getExtension().isBlank())
+                ? obtenerExtension(documento.getRutaArchivo())
+                : documento.getExtension().toLowerCase(Locale.ROOT);
+
+        if (extension == null || extension.isBlank() || "bin".equalsIgnoreCase(extension)) {
+            return tituloLimpio;
+        }
+        return tituloLimpio + "." + extension;
+    }
+
+    public String obtenerTipoMime(Long id) {
+        DocumentoEntity documento = documentoRepository.findById(id)
+                .orElseThrow(() -> new AppException("DOC_NOT_FOUND", "Documento no encontrado", 404));
+        Path archivo = resolverRutaLocal(documento.getRutaArchivo());
+        try {
+            String mime = Files.probeContentType(archivo);
+            return (mime == null || mime.isBlank()) ? "application/octet-stream" : mime;
+        } catch (IOException ex) {
+            return "application/octet-stream";
+        }
+    }
+
+    private Path resolverRutaLocal(String rutaArchivo) {
+        if (rutaArchivo == null || rutaArchivo.isBlank()) {
+            throw new AppException("DOC_FILE_NOT_FOUND", "El archivo del documento no existe", 404);
+        }
+
+        String nombreArchivo = Paths.get(rutaArchivo).getFileName().toString();
+        return storageRoot.resolve(nombreArchivo).normalize();
     }
 
     private DocumentoDTO mapearADTO(DocumentoEntity documento) {

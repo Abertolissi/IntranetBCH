@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -40,6 +41,18 @@ export class DocumentsService {
     return this.http
       .post<ApiResponse<null>>(`${this.apiUrl}/${id}/descargar`, {})
       .pipe(map((response) => response.data));
+  }
+
+  descargarDocumento(id: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.apiUrl}/${id}/archivo`, {
+      observe: 'response',
+      responseType: 'blob'
+    });
+  }
+
+  descargarDocumentoDesdeRuta(rutaArchivo: string): Observable<Blob> {
+    const url = this.obtenerBackendBaseUrl() + (rutaArchivo.startsWith('/') ? '' : '/') + rutaArchivo;
+    return this.http.get(url, { responseType: 'blob' });
   }
 
   crearDocumento(documento: Partial<Documento>): Observable<Documento> {
@@ -85,7 +98,7 @@ export class DocumentsService {
   }
 
   obtenerBackendBaseUrl(): string {
-    return environment.apiUrl.replace(/\/api\/?$/, '');
+    return environment.apiUrl.replace(/\/$/, '');
   }
 
   private crearParams(page: number, size: number): HttpParams {

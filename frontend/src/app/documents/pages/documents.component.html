@@ -5,24 +5,34 @@
         <h1 class="headline-font">Sistema de Gestión Documental</h1>
         <p class="subtitle">Acceso seguro a activos, normativas y reportes estratégicos.</p>
       </div>
+      <div class="view-switch" role="tablist" aria-label="Vistas de documentos">
+        <button mat-stroked-button color="primary" [class.active-view]="mostrarCarga" (click)="irAVista('carga')">
+          <mat-icon>upload_file</mat-icon>
+          Carga
+        </button>
+        <button mat-stroked-button color="primary" [class.active-view]="mostrarVisualizacion" (click)="irAVista('visualizacion')">
+          <mat-icon>folder_open</mat-icon>
+          Visualización
+        </button>
+      </div>
       <div class="head-actions">
-        <button mat-stroked-button color="primary" (click)="refrescar()">
+        <button mat-stroked-button color="primary" (click)="refrescar()" *ngIf="mostrarVisualizacion">
           <mat-icon>refresh</mat-icon>
           Refrescar
         </button>
-        <button mat-stroked-button color="primary" (click)="limpiarFiltros()">
+        <button mat-stroked-button color="primary" (click)="limpiarFiltros()" *ngIf="mostrarVisualizacion">
           <mat-icon>cleaning_services</mat-icon>
           Limpiar
         </button>
-        <button mat-raised-button color="primary" (click)="buscar()">
+        <button mat-raised-button color="primary" (click)="buscar()" *ngIf="mostrarVisualizacion">
           <mat-icon>search</mat-icon>
           Buscar
         </button>
       </div>
     </section>
 
-    <section class="main-grid">
-      <article class="dropzone executive-card">
+    <section class="main-grid" *ngIf="mostrarCarga || mostrarVisualizacion">
+      <article class="dropzone executive-card" *ngIf="mostrarCarga">
         <div class="drop-icon"><mat-icon>description</mat-icon></div>
         <h2 class="headline-font">Carga de Documentos</h2>
         <p>
@@ -83,7 +93,7 @@
         </div>
       </article>
 
-      <aside class="filters executive-card">
+      <aside class="filters executive-card" *ngIf="mostrarVisualizacion">
         <div class="filter-head">
           <h3 class="headline-font">Filtros</h3>
           <button class="clear-btn" (click)="limpiarFiltros()">Limpiar</button>
@@ -110,7 +120,7 @@
       </aside>
     </section>
 
-    <section class="table-wrap executive-card">
+    <section class="table-wrap executive-card" *ngIf="mostrarVisualizacion">
       <div class="table-head">
         <h3 class="headline-font">Explorador de Archivos</h3>
         <div class="table-actions" *ngIf="!cargando && !error">
@@ -167,16 +177,14 @@
                 <span class="state" [class.ok]="documento.activo">{{ documento.activo ? 'Disponible' : 'Inactivo' }}</span>
               </td>
               <td class="right">
-                <a
+                <button
                   mat-icon-button
                   color="primary"
-                  [href]="obtenerUrlArchivo(documento.rutaArchivo)"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   [class.disabled-link]="!documento.activo || !documento.rutaArchivo"
-                  (click)="registrarDescarga(documento, $event)">
+                  [disabled]="!documento.activo || !documento.rutaArchivo"
+                  (click)="descargarDocumento(documento)">
                   <mat-icon>download</mat-icon>
-                </a>
+                </button>
               </td>
             </tr>
           </tbody>

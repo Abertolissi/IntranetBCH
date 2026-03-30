@@ -10,17 +10,27 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { DocumentsComponent } from './pages/documents.component';
+import { DocumentsAreasCategoriesComponent } from './pages/documents-areas-categories.component';
 import { LayoutModule } from '../layout/layout.module';
 
 const routes: Routes = [
   {
     path: '',
+    redirectTo: 'visualizacion',
+    pathMatch: 'full'
+  },
+  {
+    path: 'areas-categorias',
+    component: DocumentsAreasCategoriesComponent
+  },
+  {
+    path: ':vista',
     component: DocumentsComponent
   }
 ];
 
 @NgModule({
-  declarations: [DocumentsComponent],
+  declarations: [DocumentsComponent, DocumentsAreasCategoriesComponent],
   imports: [
     CommonModule,
     FormsModule,

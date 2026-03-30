@@ -31,10 +31,24 @@
         <mat-icon matListItemIcon>newspaper</mat-icon>
         <span matListItemTitle>Noticias Internas</span>
       </a>
-      <a mat-list-item routerLink="/app/documentos" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>description</mat-icon>
-        <span matListItemTitle>Documentos</span>
-      </a>
+      <div class="menu-group" routerLinkActive="group-active">
+        <div class="menu-group-label">
+          <mat-icon>description</mat-icon>
+          <span>Documento</span>
+        </div>
+        <a mat-list-item class="submenu-link" routerLink="/app/documentos/carga" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>upload_file</mat-icon>
+          <span matListItemTitle>Carga de Documentos</span>
+        </a>
+        <a mat-list-item class="submenu-link" routerLink="/app/documentos/visualizacion" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>folder_open</mat-icon>
+          <span matListItemTitle>Visualización de Documentos</span>
+        </a>
+        <a mat-list-item class="submenu-link" routerLink="/app/documentos/areas-categorias" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>account_tree</mat-icon>
+          <span matListItemTitle>Documentos por Areas y Categorias</span>
+        </a>
+      </div>
       <a mat-list-item routerLink="/app/chat" routerLinkActive="active-link">
         <mat-icon matListItemIcon>smart_toy</mat-icon>
         <span matListItemTitle>Agente de Chat (IA)</span>
