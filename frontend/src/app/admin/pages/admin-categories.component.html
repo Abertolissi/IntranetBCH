@@ -1,0 +1,64 @@
+<app-layout>
+  <section class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1 class="headline-font">AMB de Categorias</h1>
+        <p>Administra las categorias disponibles para documentos.</p>
+      </div>
+    </header>
+
+    <article class="admin-card">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-field">
+          <mat-label>Nueva categoria</mat-label>
+          <input matInput [(ngModel)]="nuevaCategoria" placeholder="Ej: Normativas" />
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="crearCategoria()">
+          <mat-icon>add</mat-icon>
+          Agregar
+        </button>
+      </div>
+
+      <div class="items-list" *ngIf="categorias.length > 0; else sinCategorias">
+        <div class="item-row" *ngFor="let categoria of categorias">
+          <ng-container *ngIf="categoriaEnEdicion !== categoria; else edicionRow">
+            <span>{{ categoria }}</span>
+            <div class="actions">
+              <button mat-stroked-button color="primary" (click)="iniciarEdicion(categoria)">
+                <mat-icon>edit</mat-icon>
+                Editar
+              </button>
+              <button mat-stroked-button color="warn" (click)="eliminarCategoria(categoria)">
+                <mat-icon>delete</mat-icon>
+                Eliminar
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-template #edicionRow>
+            <mat-form-field appearance="outline" class="full-field">
+              <mat-label>Categoria</mat-label>
+              <input matInput [(ngModel)]="categoriaEditada" />
+            </mat-form-field>
+            <div class="actions">
+              <button mat-raised-button color="primary" (click)="guardarEdicion()">
+                <mat-icon>save</mat-icon>
+                Guardar
+              </button>
+              <button mat-stroked-button (click)="cancelarEdicion()">
+                <mat-icon>close</mat-icon>
+                Cancelar
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </article>
+
+    <ng-template #sinCategorias>
+      <article class="admin-card">
+        <p>No hay categorias configuradas.</p>
+      </article>
+    </ng-template>
+  </section>
+</app-layout>

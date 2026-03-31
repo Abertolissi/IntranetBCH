@@ -5,6 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { HttpResponse } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 import { Documento } from '../../core/models/app.models';
+import { CatalogManagementService } from '../../core/services/catalog-management.service';
 import { DocumentPage, DocumentsService } from '../services/documents.service';
 
 @Component({
@@ -16,6 +17,8 @@ export class DocumentsComponent implements OnInit {
   vistaActiva: 'carga' | 'visualizacion' = 'visualizacion';
   documentos: Documento[] = [];
   clasificaciones: string[] = [];
+  categoriasCarga: string[] = [];
+  areasCarga: string[] = [];
   terminoBusqueda = '';
   clasificacionSeleccionada = '';
   cargando = false;
@@ -25,7 +28,7 @@ export class DocumentsComponent implements OnInit {
   archivoSeleccionado: File | null = null;
   formularioCarga = {
     titulo: '',
-    clasificacion: 'INTERNO',
+    clasificacion: '',
     descripcion: '',
     departamento: '',
     etiquetas: '',
@@ -40,12 +43,18 @@ export class DocumentsComponent implements OnInit {
 
   constructor(
     private documentsService: DocumentsService,
+    private catalogManagementService: CatalogManagementService,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.categoriasCarga = this.catalogManagementService.getCategories();
+    this.areasCarga = this.catalogManagementService.getAreas();
+    this.formularioCarga.clasificacion = this.categoriasCarga[0] || '';
+    this.formularioCarga.departamento = this.areasCarga[0] || '';
+
     this.route.paramMap.subscribe((params) => {
       const vista = params.get('vista');
       this.vistaActiva = vista === 'carga' ? 'carga' : 'visualizacion';
@@ -257,9 +266,9 @@ export class DocumentsComponent implements OnInit {
     this.archivoSeleccionado = null;
     this.formularioCarga = {
       titulo: '',
-      clasificacion: 'INTERNO',
+      clasificacion: this.categoriasCarga[0] || '',
       descripcion: '',
-      departamento: '',
+      departamento: this.areasCarga[0] || '',
       etiquetas: '',
       version: '1.0',
       autorNombre: ''
@@ -291,6 +300,46 @@ export class DocumentsComponent implements OnInit {
       return 'description';
     }
     return 'insert_drive_file';
+  }
+
+  obtenerIconoClasificacion(clasificacion: string): string {
+    const valor = clasificacion.toLowerCase();
+    if (valor.includes('norma')) {
+      return 'gavel';
+    }
+    if (valor.includes('proced')) {
+      return 'account_tree';
+    }
+    if (valor.includes('manual')) {
+      return 'menu_book';
+    }
+    if (valor.includes('audit') || valor.includes('auditor')) {
+      return 'fact_check';
+    }
+    if (valor.includes('acta') || valor.includes('minuta')) {
+      return 'groups';
+    }
+    return 'folder';
+  }
+
+  obtenerIconoArea(area: string): string {
+    const valor = area.toLowerCase();
+    if (valor.includes('human') || valor.includes('rrhh') || valor.includes('recursos')) {
+      return 'groups';
+    }
+    if (valor.includes('tec') || valor.includes('tecnolog')) {
+      return 'settings_suggest';
+    }
+    if (valor.includes('opera')) {
+      return 'payments';
+    }
+    if (valor.includes('riesgo')) {
+      return 'security';
+    }
+    if (valor.includes('audit') || valor.includes('auditor')) {
+      return 'fact_check';
+    }
+    return 'business';
   }
 
   trackByDocumento(index: number, documento: Documento): number {
@@ -365,11 +414,12 @@ export class DocumentsComponent implements OnInit {
   }
 
   private construirClasificaciones(documentos: Documento[]): string[] {
-    const valores = documentos
+    const valoresDocumentos = documentos
       .map((documento) => documento.clasificacion)
       .filter((valor): valor is string => !!valor && valor.trim().length > 0)
       .map((valor) => valor.trim());
 
+    const valores = [...valoresDocumentos, ...this.catalogManagementService.getCategories()];
     return Array.from(new Set(valores)).sort((a, b) => a.localeCompare(b));
   }
 }

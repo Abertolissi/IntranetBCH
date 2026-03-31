@@ -53,10 +53,18 @@
     <section *ngIf="!cargando && !error">
       <div class="section-head">
         <h2 class="headline-font">Agrupacion por Categorias</h2>
+        <button mat-stroked-button color="primary" *ngIf="categoriaActiva" (click)="limpiarFiltroCategoria()">
+          <mat-icon>filter_alt_off</mat-icon>
+          Mostrar todas
+        </button>
       </div>
 
       <div class="categories-grid" *ngIf="modoVista === 'grid'">
-        <article class="category-card executive-card" *ngFor="let categoria of categorias">
+        <article
+          class="category-card executive-card"
+          *ngFor="let categoria of categorias"
+          [class.category-card-active]="esCategoriaActiva(categoria)"
+          (click)="seleccionarCategoria(categoria)">
           <div class="cat-icon">
             <mat-icon>{{ obtenerIconoCategoria(categoria.nombre) }}</mat-icon>
           </div>
@@ -77,7 +85,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let categoria of categorias">
+            <tr *ngFor="let categoria of categorias"
+              [class.category-row-active]="esCategoriaActiva(categoria)"
+              (click)="seleccionarCategoria(categoria)">
               <td>
                 <div class="cat-name">
                   <mat-icon>{{ obtenerIconoCategoria(categoria.nombre) }}</mat-icon>
@@ -96,36 +106,18 @@
     <section *ngIf="!cargando && !error">
       <div class="section-head">
         <h2 class="headline-font">Documentos por Area / Gerencia</h2>
-        <p>Navega por cada area y accede a sus documentos mas recientes.</p>
-      </div>
-
-      <div class="areas-grid">
-        <article class="area-card executive-card" *ngFor="let area of areasPrincipales">
-          <header>
-            <div class="area-title">
-              <mat-icon>{{ obtenerIconoArea(area.nombre) }}</mat-icon>
-              <h3 class="headline-font">{{ area.nombre }}</h3>
-            </div>
-            <small>{{ area.documentos.length }} archivos</small>
-          </header>
-
-          <div class="area-doc" *ngFor="let documento of area.documentos.slice(0, 2)">
-            <div>
-              <strong>{{ documento.titulo }}</strong>
-              <p>{{ documento.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</p>
-            </div>
-            <span [class]="'chip ' + claseChip(documento)">{{ documento.clasificacion || 'General' }}</span>
-          </div>
-
-          <button mat-button color="primary" (click)="seleccionarArea(area)">
-            Ver todos los archivos de {{ area.nombre }}
-            <mat-icon>arrow_forward</mat-icon>
-          </button>
-        </article>
+        <button mat-stroked-button color="primary" *ngIf="areaActiva" (click)="limpiarFiltroArea()">
+          <mat-icon>clear</mat-icon>
+          Quitar filtro de area
+        </button>
       </div>
 
       <div class="other-areas">
-        <button class="area-mini executive-card" *ngFor="let area of areasSecundarias" (click)="seleccionarArea(area)">
+        <button
+          class="area-mini executive-card"
+          *ngFor="let area of areas"
+          [class.area-mini-active]="esAreaActiva(area)"
+          (click)="seleccionarArea(area)">
           <mat-icon>{{ obtenerIconoArea(area.nombre) }}</mat-icon>
           <h4>{{ area.nombre }}</h4>
           <p>{{ area.documentos.length }} documentos</p>
@@ -133,10 +125,15 @@
       </div>
     </section>
 
-    <section class="area-detail executive-card" *ngIf="areaActiva">
+    <section class="area-detail executive-card" *ngIf="!cargando && !error">
       <div class="section-head">
-        <h2 class="headline-font">{{ areaActiva.nombre }}</h2>
-        <p>{{ areaActiva.documentos.length }} documentos disponibles</p>
+        <h2 class="headline-font">Listado de Documentos para Descargar</h2>
+        <p *ngIf="!categoriaActiva && !areaActiva">Mostrando todos los documentos (paginado de 10).</p>
+        <p *ngIf="categoriaActiva || areaActiva">
+          <span *ngIf="categoriaActiva">Categoria: <strong>{{ categoriaActiva }}</strong></span>
+          <span *ngIf="categoriaActiva && areaActiva"> | </span>
+          <span *ngIf="areaActiva">Area: <strong>{{ areaActiva.nombre }}</strong></span>
+        </p>
       </div>
 
       <div class="area-table-wrap">
@@ -151,7 +148,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let documento of areaActiva.documentos">
+            <tr *ngFor="let documento of documentosPagina">
               <td>{{ documento.titulo }}</td>
               <td>{{ documento.clasificacion || 'General' }}</td>
               <td>{{ documento.version || '1.0' }}</td>
@@ -162,8 +159,23 @@
                 </button>
               </td>
             </tr>
+            <tr *ngIf="!documentosPagina.length">
+              <td colspan="5">No hay documentos para los filtros seleccionados.</td>
+            </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="pagination-bar" *ngIf="totalDocumentosListado > 0">
+        <button mat-stroked-button (click)="paginaAnterior()" [disabled]="paginaActual === 1">
+          <mat-icon>chevron_left</mat-icon>
+          Anterior
+        </button>
+        <span>Pagina {{ paginaActual }} de {{ totalPaginas }} - {{ totalDocumentosListado }} documentos</span>
+        <button mat-stroked-button (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas">
+          Siguiente
+          <mat-icon>chevron_right</mat-icon>
+        </button>
       </div>
     </section>
   </div>

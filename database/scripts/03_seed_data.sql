@@ -52,7 +52,7 @@ BEGIN
 		departamento, puesto, activo, cuenta_bloqueada, intentos_fallidos,
 		usuario_creacion
 	) VALUES (
-		'Administrador', 'Sistema', 'admin@banco.local', 'EMP001', 'Password123!',
+		'Administrador', 'Sistema', 'admin@banco.local', 'EMP001', 'AdminPassword123!',
 		'TI', 'Administrador', 1, 0, 0,
 		'SYSTEM'
 	);
@@ -96,30 +96,41 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT 1 FROM documentos)
-BEGIN
-	INSERT INTO documentos (
-		titulo, descripcion, tipo, ruta_archivo, extension, tamanio,
-		clasificacion, activo, numero_descargas, autor_id, autor_nombre,
-		departamento, etiquetas, version, usuario_creacion
-	)
-	SELECT
-		'Manual de Seguridad',
-		'Documento inicial de políticas de seguridad.',
-		'PDF',
-		'/storage/documents/manual-seguridad.pdf',
-		'pdf',
-		102400,
-		'INTERNO',
-		1,
-		0,
-		u.id,
-		'Administrador Sistema',
-		'TI',
-		'seguridad,politicas',
-		'1.0',
-		'SYSTEM'
-	FROM usuarios u
-	WHERE u.email = 'admin@banco.local';
-END
+INSERT INTO documentos (
+	titulo, descripcion, tipo, ruta_archivo, extension, tamanio,
+	clasificacion, activo, numero_descargas, autor_id, autor_nombre,
+	departamento, etiquetas, version, usuario_creacion
+)
+SELECT
+	d.titulo,
+	d.descripcion,
+	d.tipo,
+	d.ruta_archivo,
+	d.extension,
+	d.tamanio,
+	d.clasificacion,
+	1,
+	0,
+	u.id,
+	'Administrador Sistema',
+	d.departamento,
+	d.etiquetas,
+	'1.0',
+	'SYSTEM'
+FROM usuarios u
+CROSS APPLY (
+	VALUES
+		('Normativa de Seguridad de la Informacion', 'Lineamientos base de seguridad institucional.', 'PDF', '/storage/documents/normativa-seguridad.pdf', 'pdf', 102400, 'Normativas', 'Tecnología', 'normativa,seguridad'),
+		('Procedimiento de Alta de Usuarios', 'Pasos para alta y validacion de usuarios internos.', 'PDF', '/storage/documents/procedimiento-alta-usuarios.pdf', 'pdf', 84320, 'Procedimientos', 'Recursos Humanos', 'procedimiento,usuarios'),
+		('Manual de Uso de la Intranet', 'Guia operativa para el uso diario de la plataforma.', 'PDF', '/storage/documents/manual-intranet.pdf', 'pdf', 95600, 'Manuales', 'Operaciones', 'manual,intranet'),
+		('Auditoria de Accesos Trimestral', 'Resumen de control y trazabilidad de accesos.', 'PDF', '/storage/documents/auditoria-accesos.pdf', 'pdf', 120512, 'Auditoria', 'Riesgos', 'auditoria,accesos'),
+		('Minuta de Comite de Auditoria', 'Acuerdos y seguimiento del comite de auditoria.', 'PDF', '/storage/documents/minuta-comite-auditoria.pdf', 'pdf', 76800, 'Minutas', 'Auditoria', 'minuta,comite')
+) AS d(titulo, descripcion, tipo, ruta_archivo, extension, tamanio, clasificacion, departamento, etiquetas)
+WHERE u.email = 'admin@banco.local'
+	AND NOT EXISTS (
+		SELECT 1
+		FROM documentos doc
+		WHERE doc.titulo = d.titulo
+			AND doc.clasificacion = d.clasificacion
+	);
 GO

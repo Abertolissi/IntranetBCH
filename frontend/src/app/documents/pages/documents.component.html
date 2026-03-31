@@ -48,15 +48,21 @@
           <mat-form-field appearance="outline">
             <mat-label>Clasificacion</mat-label>
             <mat-select [(ngModel)]="formularioCarga.clasificacion">
-              <mat-option value="INTERNO">INTERNO</mat-option>
-              <mat-option value="PUBLICO">PUBLICO</mat-option>
-              <mat-option value="CONFIDENCIAL">CONFIDENCIAL</mat-option>
+              <mat-option *ngFor="let categoria of categoriasCarga" [value]="categoria">
+                <mat-icon>{{ obtenerIconoClasificacion(categoria) }}</mat-icon>
+                {{ categoria }}
+              </mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Departamento</mat-label>
-            <input matInput [(ngModel)]="formularioCarga.departamento" placeholder="Ej: TI" />
+            <mat-select [(ngModel)]="formularioCarga.departamento">
+              <mat-option *ngFor="let area of areasCarga" [value]="area">
+                <mat-icon>{{ obtenerIconoArea(area) }}</mat-icon>
+                {{ area }}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -113,6 +119,7 @@
           <mat-select [(ngModel)]="clasificacionSeleccionada" (selectionChange)="cambiarClasificacion()">
             <mat-option value="">Todas</mat-option>
             <mat-option *ngFor="let clasificacion of clasificaciones" [value]="clasificacion">
+              <mat-icon>{{ obtenerIconoClasificacion(clasificacion) }}</mat-icon>
               {{ clasificacion }}
             </mat-option>
           </mat-select>

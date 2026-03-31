@@ -53,10 +53,24 @@
         <mat-icon matListItemIcon>smart_toy</mat-icon>
         <span matListItemTitle>Agente de Chat (IA)</span>
       </a>
-      <a mat-list-item routerLink="/app/admin" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-        <span matListItemTitle>Administración</span>
-      </a>
+      <div class="menu-group" routerLinkActive="group-active">
+        <div class="menu-group-label">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Administracion</span>
+        </div>
+        <a mat-list-item class="submenu-link" routerLink="/app/admin" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>space_dashboard</mat-icon>
+          <span matListItemTitle>Panel</span>
+        </a>
+        <a mat-list-item class="submenu-link" routerLink="/app/admin/categorias" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>category</mat-icon>
+          <span matListItemTitle>AMB Categorias</span>
+        </a>
+        <a mat-list-item class="submenu-link" routerLink="/app/admin/areas" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>business</mat-icon>
+          <span matListItemTitle>AMB Areas</span>
+        </a>
+      </div>
     </mat-nav-list>
   </mat-sidenav>
 

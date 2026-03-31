@@ -36,10 +36,15 @@ export class DocumentsAreasCategoriesComponent implements OnInit {
   modoOrden: SortMode = 'popular';
 
   documentos: Documento[] = [];
+  documentosListado: Documento[] = [];
   categorias: CategorySummary[] = [];
   areas: AreaSummary[] = [];
+  categoriaActiva: string | null = null;
 
   areaActiva: AreaSummary | null = null;
+  paginaActual = 1;
+  readonly tamanoPagina = 10;
+  totalPaginas = 1;
 
   constructor(
     private documentsService: DocumentsService,
@@ -50,12 +55,13 @@ export class DocumentsAreasCategoriesComponent implements OnInit {
     this.cargarDocumentos();
   }
 
-  get areasPrincipales(): AreaSummary[] {
-    return this.areas.slice(0, 2);
+  get documentosPagina(): Documento[] {
+    const inicio = (this.paginaActual - 1) * this.tamanoPagina;
+    return this.documentosListado.slice(inicio, inicio + this.tamanoPagina);
   }
 
-  get areasSecundarias(): AreaSummary[] {
-    return this.areas.slice(2);
+  get totalDocumentosListado(): number {
+    return this.documentosListado.length;
   }
 
   cargarDocumentos(): void {
@@ -72,8 +78,54 @@ export class DocumentsAreasCategoriesComponent implements OnInit {
     this.categorias = this.ordenarCategorias(this.categorias);
   }
 
+  seleccionarCategoria(categoria: CategorySummary): void {
+    this.categoriaActiva = this.categoriaActiva === categoria.nombre ? null : categoria.nombre;
+    this.paginaActual = 1;
+    this.recalcularVista();
+  }
+
+  limpiarFiltroCategoria(): void {
+    if (!this.categoriaActiva) {
+      return;
+    }
+    this.categoriaActiva = null;
+    this.paginaActual = 1;
+    this.recalcularVista();
+  }
+
+  esCategoriaActiva(categoria: CategorySummary): boolean {
+    return this.categoriaActiva === categoria.nombre;
+  }
+
   seleccionarArea(area: AreaSummary): void {
-    this.areaActiva = area;
+    this.areaActiva = this.areaActiva?.nombre === area.nombre ? null : area;
+    this.paginaActual = 1;
+    this.recalcularVista();
+  }
+
+  limpiarFiltroArea(): void {
+    if (!this.areaActiva) {
+      return;
+    }
+    this.areaActiva = null;
+    this.paginaActual = 1;
+    this.recalcularVista();
+  }
+
+  esAreaActiva(area: AreaSummary): boolean {
+    return this.areaActiva?.nombre === area.nombre;
+  }
+
+  paginaAnterior(): void {
+    if (this.paginaActual > 1) {
+      this.paginaActual -= 1;
+    }
+  }
+
+  paginaSiguiente(): void {
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual += 1;
+    }
   }
 
   descargarDocumento(documento: Documento): void {
@@ -133,11 +185,11 @@ export class DocumentsAreasCategoriesComponent implements OnInit {
     if (valor.includes('manual')) {
       return 'menu_book';
     }
-    if (valor.includes('audit')) {
-      return 'verified_user';
+    if (valor.includes('audit') || valor.includes('auditor')) {
+      return 'fact_check';
     }
     if (valor.includes('acta') || valor.includes('minuta')) {
-      return 'meeting_room';
+      return 'groups';
     }
     return 'folder';
   }
@@ -202,13 +254,56 @@ export class DocumentsAreasCategoriesComponent implements OnInit {
   }
 
   private recalcularVista(): void {
-    const docsFiltrados = this.filtrarDocumentos(this.documentos);
-    this.categorias = this.ordenarCategorias(this.construirCategorias(docsFiltrados));
+    const docsFiltradosBusqueda = this.filtrarDocumentos(this.documentos);
+    this.categorias = this.ordenarCategorias(this.construirCategorias(docsFiltradosBusqueda));
+
+    if (this.categoriaActiva) {
+      const categoriaDisponible = this.categorias.some((categoria) => categoria.nombre === this.categoriaActiva);
+      if (!categoriaDisponible) {
+        this.categoriaActiva = null;
+      }
+    }
+
+    const docsFiltrados = this.categoriaActiva
+      ? docsFiltradosBusqueda.filter((doc) => (doc.clasificacion || 'Sin categoria').trim() === this.categoriaActiva)
+      : docsFiltradosBusqueda;
+
     this.areas = this.construirAreas(docsFiltrados);
 
     if (this.areaActiva) {
-      const actualizada = this.areas.find((area) => area.nombre === this.areaActiva?.nombre) || null;
-      this.areaActiva = actualizada;
+      const areaDisponible = this.areas.some((area) => area.nombre === this.areaActiva?.nombre);
+      if (!areaDisponible) {
+        this.areaActiva = null;
+      }
+    }
+
+    const docsArea = this.areaActiva
+      ? docsFiltrados.filter((doc) => (doc.departamento || 'General').trim() === this.areaActiva?.nombre)
+      : docsFiltrados;
+
+    this.documentosListado = [...docsArea].sort((a, b) => {
+      const fa = a.fechaCreacion ? new Date(a.fechaCreacion).getTime() : 0;
+      const fb = b.fechaCreacion ? new Date(b.fechaCreacion).getTime() : 0;
+      return fb - fa;
+    });
+
+    this.actualizarPaginacion();
+
+    if (!this.areaActiva) {
+      return;
+    }
+
+    const actualizada = this.areas.find((area) => area.nombre === this.areaActiva?.nombre) || null;
+    this.areaActiva = actualizada;
+  }
+
+  private actualizarPaginacion(): void {
+    this.totalPaginas = Math.max(1, Math.ceil(this.documentosListado.length / this.tamanoPagina));
+    if (this.paginaActual > this.totalPaginas) {
+      this.paginaActual = this.totalPaginas;
+    }
+    if (this.paginaActual < 1) {
+      this.paginaActual = 1;
     }
   }
 

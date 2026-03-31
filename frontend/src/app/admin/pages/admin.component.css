@@ -26,8 +26,39 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.quick-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.quick-card h3 {
+  margin: 0;
+}
+
+.quick-card p {
+  margin: 0.35rem 0 0;
+  color: #555;
+}
+
 @media (max-width: 768px) {
   .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quick-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-card {
     flex-direction: column;
     align-items: flex-start;
   }

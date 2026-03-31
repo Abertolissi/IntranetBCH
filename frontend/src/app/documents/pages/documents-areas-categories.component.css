@@ -97,6 +97,19 @@ h1 {
   display: grid;
   gap: 8px;
   text-align: left;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category-card:hover {
+  border-color: rgba(15, 42, 86, 0.35);
+  transform: translateY(-1px);
+}
+
+.category-card-active {
+  border-color: #0f2a56;
+  box-shadow: 0 8px 18px rgba(15, 42, 86, 0.15);
 }
 
 .cat-icon {
@@ -152,64 +165,23 @@ td {
   color: #1f252d;
 }
 
+.categories-list tbody tr {
+  cursor: pointer;
+}
+
+.categories-list tbody tr:hover {
+  background: rgba(15, 42, 86, 0.04);
+}
+
+.category-row-active {
+  background: rgba(15, 42, 86, 0.1);
+}
+
 .cat-name {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-weight: 700;
-}
-
-.areas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 14px;
-}
-
-.area-card {
-  display: grid;
-  gap: 10px;
-}
-
-.area-card header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #031632;
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 12px;
-}
-
-.area-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.area-title h3 {
-  font-size: 1.05rem;
-}
-
-.area-doc {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid rgba(117, 119, 126, 0.2);
-  border-left: 4px solid #7aa8d4;
-  border-radius: 10px;
-  padding: 10px 12px;
-}
-
-.area-doc strong {
-  color: #031632;
-  font-size: 0.93rem;
-}
-
-.area-doc p {
-  color: #6c7480;
-  font-size: 12px;
-  margin-top: 3px;
 }
 
 .chip {
@@ -238,7 +210,7 @@ td {
 
 .other-areas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 12px;
 }
 
@@ -250,6 +222,17 @@ td {
   gap: 6px;
   justify-items: center;
   background: #ffffff;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.area-mini:hover {
+  border-color: rgba(15, 42, 86, 0.35);
+  transform: translateY(-1px);
+}
+
+.area-mini-active {
+  border-color: #0f2a56;
 }
 
 .area-mini mat-icon {
@@ -277,6 +260,20 @@ td {
 
 .area-table-wrap {
   overflow: auto;
+}
+
+.pagination-bar {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pagination-bar span {
+  color: #4a6774;
+  font-weight: 600;
 }
 
 @media (max-width: 960px) {
